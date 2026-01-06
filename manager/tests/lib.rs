@@ -11,15 +11,15 @@ mod unit {
     pub mod telegraf_controller_tests;
 }
 
-// Integration Tests
-// mod integration {
-//     pub mod manager_telegraf_tests;
-//     pub mod manager_docker_socket_tests;
-// }
-
 // Property-Based Tests
-// mod property {
-//     pub mod property_1_atomicity_tests;
-//     pub mod property_2_sighup_tests;
-//     pub mod property_5_rollback_tests;
-// }
+mod property {
+    pub mod property_1_atomicity_tests;
+    pub mod property_2_sighup_tests;
+    pub mod property_5_rollback_tests;
+}
+
+// Integration Tests
+mod integration {
+    pub mod manager_telegraf_tests;
+    pub mod manager_docker_socket_tests;
+}

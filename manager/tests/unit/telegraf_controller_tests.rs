@@ -3,6 +3,9 @@
 
 use std::process::{Command, Output, ExitStatus};
 
+#[cfg(unix)]
+use std::os::unix::process::ExitStatusExt;
+
 #[cfg(test)]
 mod docker_operations_tests {
     use super::*;
@@ -25,8 +28,18 @@ mod docker_operations_tests {
                 _ => "Unknown error".to_string(),
             };
             
+            #[cfg(unix)]
+            let status = ExitStatus::from_raw(256); // Exit code 1 (256 = 1 << 8)
+            
+            #[cfg(not(unix))]
+            let status = {
+                // Windows環境では別の方法でExitStatusを作成
+                use std::process::Command;
+                Command::new("cmd").arg("/C").arg("exit 1").status().unwrap()
+            };
+            
             Ok(Output {
-                status: std::process::ExitStatus::from_raw(1),
+                status,
                 stdout: Vec::new(),
                 stderr: error_message.into_bytes(),
             })

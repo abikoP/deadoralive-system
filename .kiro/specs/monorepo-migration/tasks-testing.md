@@ -76,8 +76,8 @@
     - ユーザーフレンドリーなエラーメッセージを返す
     - _Requirements: 11.5, 12.5, Testing Strategy_
 
-- [ ] 5. Property-Based Tests: Property 1（設定ファイル更新の原子性）
-  - [ ] 5.1 Property 1のテスト実装
+- [x] 5. Property-Based Tests: Property 1（設定ファイル更新の原子性）
+  - [x] 5.1 Property 1のテスト実装
     - **Property 1: 設定ファイル更新の原子性**
     - *For any* URL更新操作、設定ファイルへの書き込みが完了するまで、Telegrafへのリロード指示は送信されない
     - ランダムなURL配列を生成（1-100個）
@@ -86,8 +86,8 @@
     - **Validates: Requirements 11.1, 11.2**
     - _Requirements: 11.1, 11.2, Testing Strategy_
 
-- [ ] 6. Property-Based Tests: Property 2（SIGHUPシグナルの確実な送信）
-  - [ ] 6.1 Property 2のテスト実装
+- [x] 6. Property-Based Tests: Property 2（SIGHUPシグナルの確実な送信）
+  - [x] 6.1 Property 2のテスト実装
     - **Property 2: SIGHUPシグナルの確実な送信**
     - *For any* 設定ファイル更新が成功した場合、TelegrafコンテナにSIGHUPシグナルが送信される
     - ランダムなURL配列を生成
@@ -96,8 +96,8 @@
     - **Validates: Requirements 11.2, 12.4**
     - _Requirements: 11.2, 12.4, Testing Strategy_
 
-- [ ] 7. Property-Based Tests: Property 5（エラー時の設定ロールバック）
-  - [ ] 7.1 Property 5のテスト実装
+- [x] 7. Property-Based Tests: Property 5（エラー時の設定ロールバック）
+  - [x] 7.1 Property 5のテスト実装
     - **Property 5: エラー時の設定ロールバック**
     - *For any* 設定ファイル更新が失敗した場合、以前の設定ファイルが保持される
     - ランダムなURL配列を生成
@@ -107,8 +107,8 @@
     - **Validates: Requirements 11.5**
     - _Requirements: 11.5, Testing Strategy_
 
-- [ ] 8. Integration Tests: Manager ↔ Telegraf
-  - [ ] 8.1 設定更新とリロードの統合テスト
+- [x] 8. Integration Tests: Manager ↔ Telegraf
+  - [x] 8.1 設定更新とリロードの統合テスト
     - テスト用のTelegrafコンテナを起動
     - 管理画面からURL更新を実行
     - 設定ファイルが更新されることを確認
@@ -116,33 +116,33 @@
     - Telegrafが設定をリロードすることを確認
     - _Requirements: 11.1, 11.2, 11.3, Testing Strategy_
 
-  - [ ] 8.2 エラーハンドリングの統合テスト
+  - [x] 8.2 エラーハンドリングの統合テスト
     - Telegrafコンテナが停止している場合のエラー処理
     - 設定ファイルが不正な場合のエラー処理
     - ユーザーに適切なエラーメッセージが表示されることを確認
     - _Requirements: 11.5, Testing Strategy_
 
-- [ ] 9. Integration Tests: Manager ↔ Docker Socket
-  - [ ] 9.1 Docker Socket統合テスト
+- [x] 9. Integration Tests: Manager ↔ Docker Socket
+  - [x] 9.1 Docker Socket統合テスト
     - Docker Socketへのアクセスを確認
     - コンテナ一覧取得が成功することを確認
     - Telegrafコンテナの識別が成功することを確認
     - _Requirements: 12.1, 12.3, Testing Strategy_
 
-  - [ ] 9.2 Docker Socket利用不可時のテスト
+  - [x] 9.2 Docker Socket利用不可時のテスト
     - Docker Socketがマウントされていない場合
     - Docker Socketへのアクセス権限がない場合
     - 適切なエラーハンドリングを確認
     - _Requirements: 12.5, Testing Strategy_
 
-- [ ] 10. End-to-End Tests: システム全体
-  - [ ] 10.1 E2Eテスト環境のセットアップ
+- [x] 10. End-to-End Tests: システム全体
+  - [x] 10.1 E2Eテスト環境のセットアップ
     - Docker Composeでテスト環境を起動
     - 全サービスの起動を確認
     - ヘルスチェックの成功を確認
     - _Requirements: Testing Strategy_
 
-  - [ ] 10.2 E2Eテスト: 完全なワークフロー
+  - [x] 10.2 E2Eテスト: 完全なワークフロー
     - システム全体を起動
     - 管理画面にログイン
     - URLを追加
@@ -151,46 +151,46 @@
     - Grafanaでデータが表示されることを確認
     - _Requirements: 11.1, 11.2, 11.3, Testing Strategy_
 
-  - [ ] 10.3 E2Eテスト: エラーシナリオ
+  - [x] 10.3 E2Eテスト: エラーシナリオ
     - 不正なURLを追加した場合
     - Telegrafが停止している場合
     - InfluxDBが停止している場合
     - 各エラーケースで適切なエラーメッセージが表示されることを確認
     - _Requirements: 11.5, Testing Strategy_
 
-- [ ] 11. テストドキュメントの作成
-  - [ ] 11.1 テスト実行手順書の作成
-    - `manager/tests/README.md`を作成えすぷ
+- [x] 11. テストドキュメントの作成
+  - [x] 11.1 テスト実行手順書の作成
+    - `manager/tests/README.md`を作成
     - 各テストの実行方法を記載
     - テスト環境のセットアップ手順を記載
     - _Requirements: Testing Strategy_
 
-  - [ ] 11.2 テストカバレッジレポートの設定
+  - [x] 11.2 テストカバレッジレポートの設定
     - `cargo-tarpaulin`または`cargo-llvm-cov`を設定
     - カバレッジレポート生成コマンドを追加
     - カバレッジ目標を設定（推奨: 80%以上）
     - _Requirements: Testing Strategy_
 
-- [ ] 12. CI/CDパイプラインへのテスト統合
-  - [ ] 12.1 GitHub Actions（または他のCI）設定
+- [x] 12. CI/CDパイプラインへのテスト統合
+  - [x] 12.1 GitHub Actions（または他のCI）設定
     - `.github/workflows/test.yml`を作成
     - プルリクエスト時に自動テスト実行
     - テスト失敗時にマージをブロック
     - _Requirements: Testing Strategy_
 
-  - [ ] 12.2 テストレポートの自動生成
+  - [x] 12.2 テストレポートの自動生成
     - テスト結果をCI/CDで表示
     - カバレッジレポートをCI/CDで表示
     - 失敗したテストの詳細を表示
     - _Requirements: Testing Strategy_
 
-- [ ] 13. 最終確認とドキュメント更新
-  - [ ] 13.1 全テストの実行確認
+- [x] 13. 最終確認とドキュメント更新
+  - [x] 13.1 全テストの実行確認
     - `cargo test`で全テストが成功することを確認
     - カバレッジが目標値を達成していることを確認
     - _Requirements: Testing Strategy_
 
-  - [ ] 13.2 READMEへのテスト情報追加
+  - [x] 13.2 READMEへのテスト情報追加
     - ルートREADME.mdにテスト実行方法を追加
     - テストカバレッジバッジを追加（オプション）
     - _Requirements: Testing Strategy_
