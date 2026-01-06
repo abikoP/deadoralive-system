@@ -6,48 +6,48 @@
 
 ## Tasks
 
-- [ ] 1. テスト環境のセットアップ
-  - [ ] 1.1 Rustテストフレームワークの設定確認
+- [x] 1. テスト環境のセットアップ
+  - [x] 1.1 Rustテストフレームワークの設定確認
     - `Cargo.toml`に必要な依存関係を追加
     - `proptest`クレートを追加（Property-Based Testing用）
     - テスト用のモックライブラリを追加（必要に応じて）
     - _Requirements: Testing Strategy_
 
-  - [ ] 1.2 テストディレクトリ構造の作成
+  - [x] 1.2 テストディレクトリ構造の作成
     - `manager/tests/`ディレクトリを作成
     - `manager/tests/unit/`ディレクトリを作成
     - `manager/tests/integration/`ディレクトリを作成
     - `manager/tests/property/`ディレクトリを作成
     - _Requirements: Testing Strategy_
 
-  - [ ] 1.3 テスト用のヘルパー関数を作成
+  - [x] 1.3 テスト用のヘルパー関数を作成
     - テスト用の一時ファイル作成ヘルパー
     - テスト用の設定ファイル生成ヘルパー
     - テスト用のURL生成ヘルパー
     - _Requirements: Testing Strategy_
 
-- [ ] 2. Unit Tests: ConfigService
-  - [ ] 2.1 設定ファイル読み込みテスト
+- [x] 2. Unit Tests: ConfigService
+  - [x] 2.1 設定ファイル読み込みテスト
     - 正常系: 有効な設定ファイルを読み込む
     - 異常系: ファイルが存在しない場合
     - 異常系: 読み取り権限がない場合
     - エッジケース: 空の設定ファイル
     - _Requirements: 11.1, Testing Strategy_
 
-  - [ ] 2.2 設定ファイル書き込みテスト
+  - [x] 2.2 設定ファイル書き込みテスト
     - 正常系: 設定ファイルに書き込む
     - 異常系: 書き込み権限がない場合
     - 異常系: ディスク容量不足の場合
     - _Requirements: 11.1, Testing Strategy_
 
-  - [ ] 2.3 設定ファイルバックアップテスト
+  - [x] 2.3 設定ファイルバックアップテスト
     - 正常系: バックアップファイルが作成される
     - 正常系: 更新成功時にバックアップが削除される
     - 異常系: 更新失敗時にバックアップから復元される
     - _Requirements: 11.5, Testing Strategy_
 
-- [ ] 3. Unit Tests: UrlValidationService
-  - [ ] 3.1 URL検証テスト
+- [x] 3. Unit Tests: UrlValidationService
+  - [x] 3.1 URL検証テスト
     - 正常系: 有効なHTTP URLを検証
     - 正常系: 有効なHTTPS URLを検証
     - 異常系: 不正なURL形式
@@ -56,22 +56,22 @@
     - エッジケース: 非常に長いURL
     - _Requirements: Testing Strategy_
 
-  - [ ] 3.2 URL配列検証テスト
+  - [x] 3.2 URL配列検証テスト
     - 正常系: 複数の有効なURLを検証
     - 異常系: 空の配列
     - 異常系: 一部が不正なURL
     - エッジケース: 重複したURL
     - _Requirements: Testing Strategy_
 
-- [ ] 4. Unit Tests: Telegrafコントローラー
-  - [ ] 4.1 Docker操作テスト（モック使用）
+- [x] 4. Unit Tests: Telegrafコントローラー
+  - [x] 4.1 Docker操作テスト（モック使用）
     - 正常系: SIGHUPシグナル送信成功
     - 異常系: コンテナが存在しない
     - 異常系: Docker Socketにアクセスできない
     - 異常系: 権限不足
     - _Requirements: 11.2, 12.4, 12.5, Testing Strategy_
 
-  - [ ] 4.2 エラーハンドリングテスト
+  - [x] 4.2 エラーハンドリングテスト
     - Docker CLIのエラー出力を適切に処理
     - ユーザーフレンドリーなエラーメッセージを返す
     - _Requirements: 11.5, 12.5, Testing Strategy_
