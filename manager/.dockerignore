@@ -1,0 +1,66 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+target/
+*.o
+*.so
+*.a
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation (not needed in container)
+docs/
+guide/
+*.md
+!README.md
+
+# Test files
+tests/
+examples/
+
+# Database files (will be mounted as volume)
+*.sqlite
+*.db
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Other
+cookies.txt
+init.md
+docker-restart.md
+telegraph.conf.sumple

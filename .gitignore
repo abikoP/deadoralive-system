@@ -1,0 +1,40 @@
+# Environment variables
+.env
+
+# Rust build artifacts
+target/
+Cargo.lock
+
+# Database files
+*.sqlite
+*.db
+
+# SSL certificates
+nginx/ssl/*
+!nginx/ssl/.gitkeep
+
+# Docker volumes
+volumes/
+
+# Logs
+*.log
+logs/
+
+# Backup files
+*.backup
+*.bak
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/

@@ -1,0 +1,214 @@
+version: '3.8'
+
+services:
+  # ========================================
+  # Nginx - Reverse Proxy
+  # ========================================
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # 使用する設定ファイルを選択
+      # Let's Encrypt用（HTTPS）
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # AWS ALB + ACM用（HTTP）の場合は以下をコメント解除
+      # - ./nginx/nginx-aws.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - frontend
+    depends_on:
+      - grafana
+      - manager
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+    labels:
+      com.deadoralive.service: "nginx"
+
+  # ========================================
+  # Manager - Telegraf Configuration Manager
+  # ========================================
+  manager:
+    build:
+      context: ./manager
+      dockerfile: Dockerfile
+    container_name: manager
+    ports:
+      - "8081:8081"
+    volumes:
+      # Telegraf設定ファイル共有（読み書き）
+      - telegraf-config:/config
+      # SQLiteデータベース永続化
+      - manager-data:/data
+      # Docker Socket（Telegraf制御用）
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - RUST_LOG=${RUST_LOG:-info}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///data/db.sqlite}
+      - JWT_SECRET=${JWT_SECRET}
+      - SERVER_HOST=${SERVER_HOST:-0.0.0.0}
+      - SERVER_PORT=${SERVER_PORT:-8081}
+      - CONFIG_PATH=/config/telegraf.conf
+      - TELEGRAF_CONTAINER_NAME=${TELEGRAF_CONTAINER_NAME:-telegraf}
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - telegraf
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    labels:
+      com.deadoralive.service: "manager"
+
+  # ========================================
+  # Telegraf - Monitoring Agent
+  # ========================================
+  telegraf:
+    image: telegraf:latest
+    container_name: telegraf
+    volumes:
+      # Telegraf設定ファイル共有（読み取り専用）
+      - telegraf-config:/etc/telegraf:ro
+      # 初期設定ファイルをコピー
+      - ./monitoring/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf.template:ro
+    environment:
+      - INFLUXDB_URL=${INFLUXDB_URL:-http://influxdb:8086}
+      - INFLUXDB_TOKEN=${INFLUXDB_ADMIN_PASSWORD}
+      - INFLUXDB_ORG=${INFLUXDB_ORG:-my-org}
+      - INFLUXDB_BUCKET=${INFLUXDB_BUCKET:-my-bucket}
+    networks:
+      - backend
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    restart: unless-stopped
+    command: >
+      sh -c "
+        if [ ! -f /etc/telegraf/telegraf.conf ]; then
+          cp /etc/telegraf/telegraf.conf.template /etc/telegraf/telegraf.conf
+        fi &&
+        telegraf --config /etc/telegraf/telegraf.conf
+      "
+    labels:
+      com.deadoralive.service: "telegraf"
+
+  # ========================================
+  # InfluxDB - Time Series Database
+  # ========================================
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - ./monitoring/influxdb/init-scripts:/docker-entrypoint-initdb.d:ro
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_ADMIN_USER:-admin}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG:-my-org}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET:-my-bucket}
+      - DOCKER_INFLUXDB_INIT_RETENTION=${INFLUXDB_RETENTION:-90d}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_PASSWORD}
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    labels:
+      com.deadoralive.service: "influxdb"
+
+  # ========================================
+  # Grafana - Visualization Dashboard
+  # ========================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_SERVER_ROOT_URL=${GRAFANA_SERVER_ROOT_URL:-https://doa.com}
+      - GF_SERVER_DOMAIN=${DOMAIN_GRAFANA:-doa.com}
+      - GF_INSTALL_PLUGINS=
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 3s
+      start_period: 30s
+      retries: 3
+    labels:
+      com.deadoralive.service: "grafana"
+
+# ========================================
+# Volumes
+# ========================================
+volumes:
+  # Telegraf設定ファイル共有
+  telegraf-config:
+    driver: local
+    labels:
+      com.deadoralive.volume: "telegraf-config"
+
+  # InfluxDBデータ永続化
+  influxdb-data:
+    driver: local
+    labels:
+      com.deadoralive.volume: "influxdb-data"
+
+  # Grafanaデータ永続化
+  grafana-data:
+    driver: local
+    labels:
+      com.deadoralive.volume: "grafana-data"
+
+  # Manager SQLiteデータベース
+  manager-data:
+    driver: local
+    labels:
+      com.deadoralive.volume: "manager-data"
+
+# ========================================
+# Networks
+# ========================================
+networks:
+  # Frontend network (Nginx, Manager, Grafana)
+  frontend:
+    driver: bridge
+    labels:
+      com.deadoralive.network: "frontend"
+
+  # Backend network (Manager, Telegraf, InfluxDB, Grafana)
+  backend:
+    driver: bridge
+    labels:
+      com.deadoralive.network: "backend"
