@@ -150,6 +150,57 @@ deadoralive-system/
 2. ダッシュボードから監視状況を確認
 3. アラート設定やグラフのカスタマイズが可能
 
+## テスト
+
+本プロジェクトでは、包括的なテストスイートを提供しています。
+
+### テストの種類
+
+- **Unit Tests**: 個々のコンポーネントの動作を検証
+- **Property-Based Tests**: ランダムな入力で正確性を検証（最小100回実行）
+- **Integration Tests**: 複数のコンポーネント間の連携を検証
+- **End-to-End Tests**: システム全体の動作を検証
+
+### テストの実行
+
+```bash
+# すべてのテストを実行
+cd manager
+cargo test
+
+# Unit Testsのみ実行
+cargo test --lib unit
+
+# Property-Based Testsのみ実行
+cargo test --lib property
+
+# Integration Testsのみ実行
+cargo test --lib integration
+
+# E2E Testsを実行（Docker Compose環境が必要）
+docker compose up -d
+cargo test --test e2e_tests -- --ignored
+```
+
+### テストカバレッジ
+
+```bash
+# カバレッジレポートを生成（cargo-tarpaulinが必要）
+cargo install cargo-tarpaulin
+cargo tarpaulin --out Html --output-dir coverage
+```
+
+詳細は[テスト実行ガイド](manager/tests/README.md)を参照してください。
+
+### CI/CD
+
+GitHub Actionsで以下のテストが自動実行されます：
+
+- **プルリクエスト時**: Format Check、Clippy Check、Unit Tests、Property-Based Tests、Integration Tests
+- **マージ後**: 上記すべて + E2E Tests
+
+テストが失敗した場合、マージはブロックされます。
+
 ## 運用コマンド
 
 ### Makefileコマンド

@@ -1,7 +1,7 @@
 # ===========================================
 # Stage 1: Builder
 # ===========================================
-FROM rust:1.75-slim as builder
+FROM rust:1.85-slim as builder
 
 WORKDIR /app
 
@@ -16,14 +16,16 @@ COPY Cargo.toml Cargo.lock ./
 COPY migration/Cargo.toml ./migration/
 
 # Create dummy source files to build dependencies
-RUN mkdir src && \
+RUN mkdir -p src/bin && \
     echo "fn main() {}" > src/main.rs && \
+    echo "fn main() {}" > src/bin/seed_user.rs && \
+    echo "fn main() {}" > src/bin/test_password.rs && \
     mkdir -p migration/src && \
-    echo "fn main() {}" > migration/src/lib.rs
+    echo "pub use sea_orm_migration::prelude::*; pub struct Migrator; #[async_trait::async_trait] impl MigratorTrait for Migrator { fn migrations() -> Vec<Box<dyn MigrationTrait>> { vec![] } }" > migration/src/lib.rs
 
 # Build dependencies (this layer will be cached)
 RUN cargo build --release && \
-    rm -rf src migration/src
+    rm -rf src migration/src target/release/.fingerprint/kiro_test-*
 
 # Copy actual source code
 COPY src ./src
@@ -83,4 +85,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8081/health || exit 1
 
 # Run the application
-CMD ["/app/kiro_test"]
+CMD ["/app/kiro_test", "start"]

@@ -1,6 +1,7 @@
 server:
   port: 3001
-  host: 127.0.0.1
+  binding: 127.0.0.1
+  host: http://localhost
 
 database:
   uri: "sqlite::memory:"
